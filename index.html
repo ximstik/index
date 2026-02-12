@@ -1,0 +1,330 @@
+```html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>XIMARI · загрузка</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: #030812;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 40, 80, 0.6) 0%, transparent 45%),
+                radial-gradient(circle at 90% 70%, rgba(0, 70, 140, 0.5) 0%, transparent 50%),
+                radial-gradient(circle at 30% 80%, rgba(0, 20, 60, 0.8) 0%, transparent 55%),
+                radial-gradient(circle at 70% 15%, rgba(0, 45, 100, 0.6) 0%, transparent 50%),
+                linear-gradient(145deg, #030c17 0%, #041220 100%);
+            font-family: 'Inter', 'Helvetica Neue', -apple-system, BlinkMacFontSystem, sans-serif;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 28px;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        /* глубокий сине-черный градиент с переливами */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 40%, rgba(0, 80, 140, 0.2) 0%, transparent 55%),
+                radial-gradient(circle at 85% 55%, rgba(0, 110, 200, 0.18) 0%, transparent 60%),
+                radial-gradient(circle at 45% 85%, rgba(0, 30, 90, 0.3) 0%, transparent 65%);
+            pointer-events: none;
+            z-index: 1;
+            animation: subtleBreath 14s infinite alternate;
+        }
+
+        @keyframes subtleBreath {
+            0% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+            100% { opacity: 0.6; }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 780px;
+            z-index: 30;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* блок загрузки — тяжелый, плотный, сине-черный */
+        .loader-block {
+            width: 100%;
+            background: rgba(2, 12, 22, 0.85);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1.2px solid rgba(0, 110, 200, 0.35);
+            border-radius: 32px;
+            padding: 56px 52px 64px;
+            box-shadow: 
+                0 25px 45px -15px rgba(0, 0, 0, 0.9),
+                0 0 0 1px rgba(0, 150, 255, 0.1) inset,
+                0 0 35px rgba(0, 70, 150, 0.25);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .percentage {
+            font-size: 88px;
+            font-weight: 700;
+            font-family: 'Inter', 'Helvetica Neue', sans-serif;
+            color: #f0f8ff;
+            line-height: 1;
+            margin-bottom: 36px;
+            letter-spacing: 6px;
+            text-shadow: 
+                0 0 12px #0058b0,
+                0 0 30px #002c5a,
+                0 2px 2px black;
+        }
+
+        /* полоса прогресса — широкая, весомая */
+        .progress-track {
+            width: 100%;
+            height: 10px;
+            background: #08141e;
+            border-radius: 100px;
+            border: 1px solid rgba(0, 120, 210, 0.4);
+            padding: 2px;
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.8);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #1a85c0, #40a0ff, #1e90d0);
+            background-size: 200% 100%;
+            border-radius: 100px;
+            box-shadow: 
+                0 0 20px #0077ff,
+                0 0 8px #0099ff inset;
+            transition: width 0.2s ease;
+            animation: progressPulse 2.2s infinite alternate;
+        }
+
+        @keyframes progressPulse {
+            0% { background-position: 0% 0; box-shadow: 0 0 15px #0066cc, 0 0 5px #0099ff inset; }
+            100% { background-position: 100% 0; box-shadow: 0 0 28px #2a8cff, 0 0 12px #b0e0ff inset; }
+        }
+
+        /* контент — появление с задержкой */
+        .content-block {
+            width: 100%;
+            margin-top: 48px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.8s cubic-bezier(0.19, 1, 0.22, 1), visibility 0s 0.8s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .content-block.visible {
+            opacity: 1;
+            visibility: visible;
+            transition: opacity 0.9s ease, visibility 0s 0s;
+        }
+
+        /* текст с датой — жирный, строгий */
+        .date-text {
+            font-size: 30px;
+            font-weight: 700;
+            color: #e6f0ff;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(0, 150, 255, 0.6);
+            padding-bottom: 16px;
+            margin-bottom: 36px;
+            font-family: 'Inter', 'Helvetica Neue', sans-serif;
+            text-shadow: 0 0 10px #004c99, 0 4px 8px black;
+            width: fit-content;
+        }
+
+        /* блок с изображением — строгая рамка, полное фото */
+        .image-frame {
+            background: rgba(0, 10, 20, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(0, 130, 220, 0.45);
+            border-radius: 28px;
+            padding: 28px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 
+                0 25px 45px -12px black,
+                0 0 0 1px rgba(0, 180, 255, 0.15) inset,
+                0 0 35px rgba(0, 70, 150, 0.3);
+        }
+
+        /* картинка ПОЛНОСТЬЮ — никаких обрезаний */
+        .image-frame img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 160, 255, 0.4);
+            box-shadow: 0 15px 35px -8px #000000;
+            transition: all 0.3s ease;
+        }
+
+        .image-frame img:hover {
+            border-color: #40a0ff;
+            box-shadow: 0 20px 45px -5px #001c3d, 0 0 25px #0055aa;
+        }
+
+        .signature {
+            margin-top: 24px;
+            font-size: 24px;
+            font-weight: 700;
+            color: #d1e5ff;
+            letter-spacing: 5px;
+            text-transform: lowercase;
+            border-top: 1.5px solid rgba(0, 140, 230, 0.6);
+            padding-top: 20px;
+            width: 100%;
+            text-align: center;
+            font-family: 'Inter', 'Helvetica Neue', sans-serif;
+            text-shadow: 0 0 10px #0050a0, 0 2px 5px black;
+        }
+
+        a {
+            text-decoration: none;
+            display: block;
+            width: 100%;
+        }
+
+        /* адаптив */
+        @media (max-width: 600px) {
+            .loader-block {
+                padding: 42px 32px 50px;
+            }
+            .percentage {
+                font-size: 70px;
+                letter-spacing: 4px;
+            }
+            .date-text {
+                font-size: 24px;
+                letter-spacing: 3px;
+            }
+            .signature {
+                font-size: 20px;
+                letter-spacing: 4px;
+            }
+        }
+
+        @media (max-width: 450px) {
+            .loader-block {
+                padding: 36px 24px 44px;
+            }
+            .percentage {
+                font-size: 58px;
+            }
+        }
+
+        /* жирный шрифт везде */
+        .loader-block, .content-block, .date-text, .signature {
+            font-weight: 700;
+        }
+        
+        /* но для некоторых элементов оставим 600 — баланс */
+        .signature {
+            font-weight: 700;
+        }
+        .date-text {
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Блок загрузки — только процент и полоса -->
+        <div class="loader-block" id="loaderBlock">
+            <div class="percentage" id="percentDisplay">0%</div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill" style="width: 0%;"></div>
+            </div>
+        </div>
+
+        <!-- Контент — появляется после загрузки -->
+        <div class="content-block" id="contentBlock">
+            <div class="date-text">Ждите до 03.03.2026</div>
+            <div class="image-frame">
+                <!-- ПОЛНОРАЗМЕРНАЯ КАРТИНКА, не миниатюра -->
+                <a href="https://iimg.su/i/J5Qz0x" target="_blank" rel="noopener noreferrer">
+                    <img src="https://iimg.su/s/12/gJ5Qz0xxaRvY9N3fNeA2z9tMpViMT9E4wyrSbczZ.png" alt="ximari">
+                </a>
+                <div class="signature">@ximari</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            'use strict';
+
+            const percentEl = document.getElementById('percentDisplay');
+            const fillEl = document.getElementById('progressFill');
+            const loaderBlock = document.getElementById('loaderBlock');
+            const contentBlock = document.getElementById('contentBlock');
+
+            let current = 0;
+            const target = 100;
+            const duration = 4000; // 4 секунды — анимация длиннее
+            const step = 20;
+            const increment = target / (duration / step);
+
+            // контент гарантированно скрыт
+            contentBlock.classList.remove('visible');
+
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    percentEl.textContent = Math.floor(current) + '%';
+                    fillEl.style.width = current + '%';
+                    clearInterval(timer);
+
+                    // плавное исчезновение загрузки
+                    loaderBlock.style.opacity = '0';
+                    loaderBlock.style.transition = 'opacity 0.7s cubic-bezier(0.23, 1, 0.32, 1)';
+                    
+                    // появление контента после исчезновения
+                    setTimeout(() => {
+                        loaderBlock.style.display = 'none';
+                        contentBlock.classList.add('visible');
+                    }, 600);
+                    
+                    return;
+                }
+                percentEl.textContent = Math.floor(current) + '%';
+                fillEl.style.width = current + '%';
+            }, step);
+        })();
+    </script>
+
+    <!-- Inter с жирными насыщенными начертаниями -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+</body>
+</html>
+```
